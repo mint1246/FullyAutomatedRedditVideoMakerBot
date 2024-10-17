@@ -12,9 +12,9 @@ The base of this project is a heavily modified version of [RedditVideoMakerBot](
 - Automated uploaders for TikTok, Instagram Reels, and YouTube Shorts (a highly requested feature not available in the original bot due to ethical/legal concerns).
 -  Something extra in there for you, the exta cheap one: **ElevenLabs free tier API key rotator** .
 
-Sample Results: [MyTikTokProfile](https://www.tiktok.com/@crazystorylord)
 
 After setup, you can let this brain-rot farm automatically generate passive income.
+Sample Results: [MyTikTokProfile](https://www.tiktok.com/@crazystorylord)
 
 
 ## Features
