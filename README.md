@@ -81,7 +81,7 @@ if you dont want to use elevenLabs modify `Automathor.sh` and coment out the exe
 Generate or modify the `config.toml`:
 
 1. Run the following command to launch the CLI UI and finish your configuration:
--     ```bash
+     ```bash
     python3 main.py
     ```
 - Alternatively, modify the `config.toml` directly. Here’s what you’ll need:
