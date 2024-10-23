@@ -18,6 +18,9 @@ min_comments = { default = 20, optional = false, nmin = 10, type = "int", explan
 [ai]
 ai_similarity_enabled = {optional = true, option = [true, false], default = false, type = "bool", explanation = "Threads read from Reddit are sorted based on their similarity to the keywords given below"}
 ai_similarity_keywords = {optional = true, type="str", example= 'Elon Musk, Twitter, Stocks', explanation = "Every keyword or even sentence, seperated with comma, is used to sort the reddit threads based on similarity"}
+ai_cleanup_enabled = {type="boolean", required=true, default=true, explanation = "Clean up the story using Groq to make the TTS better, and give the story better spelling and make it make more sense."}  # Set to true to clean up the story text
+ai_update_check_enabled = {type="boolean", required=false, default=true, explanation =  "Check user profile for updates after finding a vaild post using the Groq API"}  # Set to true if you want AI to check for story updates
+groq_api_key = {type="string", required=true, explanation = "Groq api key used for AI story cleanup and update checking PS: groq has a free api"}
 
 [settings]
 allow_nsfw = { optional = false, type = "bool", default = false, example = false, options = [true, false, ], explanation = "Whether to allow NSFW content, True or False" }
