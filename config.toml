@@ -1,6 +1,10 @@
 [ai]
 ai_similarity_enabled = false
 ai_similarity_keywords = ""
+ai_cleanup_enabled = true
+ai_update_check_enabled = true
+groq_api_key = ""
+
 
 [settings]
 allow_nsfw = true
