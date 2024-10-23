@@ -3,6 +3,8 @@ import requests
 import praw
 from praw.models import MoreComments
 from prawcore.exceptions import ResponseException
+import json
+
 
 from utils import settings
 from utils.ai_methods import sort_by_similarity
@@ -30,18 +32,18 @@ def get_subreddit_threads(POST_ID: str):
         passkey = f"{pw}:{code}"
     else:
         passkey = settings.config["reddit"]["creds"]["password"]
-    
+
     username = settings.config["reddit"]["creds"]["username"]
     if str(username).casefold().startswith("u/"):
         username = username[2:]
-    
+
     try:
         reddit = praw.Reddit(
             client_id=settings.config["reddit"]["creds"]["client_id"],
             client_secret=settings.config["reddit"]["creds"]["client_secret"],
             user_agent="Accessing Reddit threads",
             username=username,
-            password=passkey,
+            passkey=passkey,
             check_for_async=False,
         )
     except ResponseException as e:
@@ -146,25 +148,32 @@ def get_subreddit_threads(POST_ID: str):
                             )
 
     print_substep("Received subreddit threads Successfully.", style="bold green")
-    
+
     # New: Clean up the story using AI
     if settings.config["settings"]["storymode"]:
         story_text = content["thread_post"]
+        print("Old story content: (before AI)")
+        print(story_text)
         content["thread_post"] = clean_story_with_ai(story_text)
+        print("New content (after AI):")
+        print(content["thread_post"])
 
     return content
 
-def clean_story_with_ai(story_text: str) -> str:
+def clean_story_with_ai(story_text: list) -> str:
     api_key = settings.config["ai"]["groq_api_key"]  # Get the API key from the config
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    
+
     # Define the system prompt to guide the model's output
-    system_prompt = "Please clean up the following story for clarity and conciseness without changing any details. Optimize for TTS use. The story will be used without any filtering so please do not write anything other than the sanitized story."
-    
+    system_prompt = "Please clean up the following story for clarity without changing any details. The story should sound like a reddit story since it comes from reddit, for example don't do stuff like I'm 28, female, do stuff like I (28F) (age is just an example). Keep details such as age and gender, do not make the story soulless. Optimize for TTS use. The story will be used without any filtering so please do not write anything other than the sanitized story. I am serious, DO NOT, WRITE ANYTHING OTHER than the sanitized story, or it will ruin the whole entire automation."
+
+    # Concatenate the story text into a single string
+    story_text_str = "\n".join(story_text)
+
     data = {
         "messages": [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": story_text}
+            {"role": "user", "content": story_text_str}  # Changed this to a single string
         ],
         "max_tokens": 1000,  # Adjust based on your needs
         "temperature": 0.7,
@@ -176,6 +185,9 @@ def clean_story_with_ai(story_text: str) -> str:
         response.raise_for_status()
         cleaned_story = response.json().get("choices")[0].get("message", {}).get("content", "")
         return cleaned_story.strip()  # Clean up the response
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
     except Exception as e:
         print(f"Error cleaning story: {e}")
-        return story_text  # Fallback to the original if there's an error
+
+    return "\n".join(story_text)  # Fallback to the original if there's an error
